@@ -1,8 +1,48 @@
 package us.courseEnrollmentsystem.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import us.courseEnrollmentsystem.data.models.Student;
+import us.courseEnrollmentsystem.data.repositories.StudentRepository;
+import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
+import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
+import us.courseEnrollmentsystem.exception.StudentException;
+
+import static us.courseEnrollmentsystem.utils.Mapper.map;
+import static us.courseEnrollmentsystem.utils.Mapper.mapUpdate;
+import static us.courseEnrollmentsystem.utils.Validator.validateStudentRequest;
 
 
 @Service
 public class StudentServiceImpl implements StudentService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+
+    @Override
+    public Student getStudentByEmail(String email) {
+        if (email == null || email.isEmpty()) throw new StudentException("email cannot be null or empty");
+        Student student = studentRepository.findByEmail(email);
+        if(student == null) throw new StudentException("Student with email " + email + " not found");
+
+        return student;
+    }
+
+    @Override
+    public UpdateStudentResponse updateStudent(String email, UpdateStudentRequest updateRequest) {
+        if (email == null || email.isEmpty()) throw new StudentException("email cannot be null or empty");
+        validateStudentRequest(updateRequest);
+
+        Student student = studentRepository.findByEmail(email);
+        if(student == null) throw new StudentException("Student with email " + email + " not found");
+
+        Student updatedStudent = map(updateRequest);
+        student.setName(updatedStudent.getName());
+        student.setPassword(updatedStudent.getPassword());
+        student.setDepartment(updatedStudent.getDepartment());
+        studentRepository.save(student);
+
+        return mapUpdate(student);
+    }
 }

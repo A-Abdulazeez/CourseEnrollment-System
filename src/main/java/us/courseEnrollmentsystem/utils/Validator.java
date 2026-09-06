@@ -3,6 +3,7 @@ package us.courseEnrollmentsystem.utils;
 import us.courseEnrollmentsystem.dtos.requests.CreateCourseRequest;
 import us.courseEnrollmentsystem.dtos.requests.LoginRequest;
 import us.courseEnrollmentsystem.dtos.requests.RegisterStudentRequest;
+import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
 import us.courseEnrollmentsystem.exception.CourseException;
 import us.courseEnrollmentsystem.exception.StudentException;
 
@@ -32,5 +33,12 @@ public class Validator {
         if (courseRequest.getTitle() == null || courseRequest.getTitle().isEmpty()) throw new CourseException("Course title cannot be empty");
         if (courseRequest.getCreditUnit() == 0 ) throw  new CourseException("Credit unit cannot be empty");
         if (courseRequest.getDepartment() == null || courseRequest.getDepartment().isEmpty()) throw  new CourseException("Department name cannot be empty");
+    }
+
+    public static void validateStudentRequest(UpdateStudentRequest studentRequest){
+        if (studentRequest == null) throw new StudentException("Student request cannot be null");
+        if (studentRequest.getName() == null || studentRequest.getName().isEmpty()) throw new StudentException("Student name cannot be empty");
+        if(studentRequest.getDepartment() == null || studentRequest.getDepartment().isEmpty()) throw new StudentException("Department name cannot be empty");
+        if (studentRequest.getPassword() == null || studentRequest.getPassword().isEmpty() || studentRequest.getPassword().length() < MIN_PASSWORD_LENGTH ) throw new StudentException("Password cannot be empty or less than 6 characters");
     }
 }

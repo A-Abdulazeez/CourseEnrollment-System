@@ -7,9 +7,11 @@ import us.courseEnrollmentsystem.data.models.Student;
 import us.courseEnrollmentsystem.dtos.requests.CreateCourseRequest;
 import us.courseEnrollmentsystem.dtos.requests.LoginRequest;
 import us.courseEnrollmentsystem.dtos.requests.RegisterStudentRequest;
+import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
 import us.courseEnrollmentsystem.dtos.responses.CreateCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.LoginResponse;
 import us.courseEnrollmentsystem.dtos.responses.RegisterStudentResponse;
+import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
 
 public class Mapper {
 
@@ -74,5 +76,24 @@ public class Mapper {
         courseResponse.setDepartment(course.getDepartment());
 
         return courseResponse;
+    }
+
+    public static Student map(UpdateStudentRequest updateRequest){
+        Student student = new Student();
+        student.setName(updateRequest.getName());
+        student.setPassword(updateRequest.getPassword());
+        student.setDepartment(updateRequest.getDepartment());
+        student.setRole(Role.STUDENT);
+
+        return student;
+    }
+
+    public static UpdateStudentResponse mapUpdate(Student student){
+        UpdateStudentResponse response = new UpdateStudentResponse();
+        response.setName(student.getName());
+        response.setDepartment(student.getDepartment());
+        response.setMessage("Update Successful");
+
+        return response;
     }
 }
