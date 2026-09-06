@@ -1,15 +1,13 @@
-package us.courseEnrollmentsystem.data.models;
+package us.courseEnrollmentsystem.dtos.responses;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 @Data
-public class Course {
+public class UpdateCourseResponse {
 
-    @Id
     private String courseCode;
     private String title;
     private int creditUnit;
     private String department;
-
+    private String message;
 }
