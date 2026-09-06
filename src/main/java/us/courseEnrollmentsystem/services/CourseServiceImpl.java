@@ -38,7 +38,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getCourseByCode(String courseCode) {
-        return null;
+        if (courseCode == null || courseCode.isEmpty() ) throw new CourseException("Course code cannot be null or empty");
+
+        Optional<Course> existingCourse = courseRepository.findById(courseCode);
+        if (existingCourse.isEmpty()) throw new CourseException("Course with code " + courseCode + " does not exist");
+
+        return existingCourse.get();
     }
 
     @Override
