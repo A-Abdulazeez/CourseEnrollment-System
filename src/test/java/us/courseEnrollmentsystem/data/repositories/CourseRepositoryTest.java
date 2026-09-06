@@ -1,6 +1,8 @@
 package us.courseEnrollmentsystem.data.repositories;
 
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +20,21 @@ public class CourseRepositoryTest {
     @Autowired
     private CourseRepository courseRepository;
 
+    @BeforeEach
+    public void setup(){
+        courseRepository.deleteAll();
+    }
+
+    @AfterEach
+    public void tearDown(){
+        courseRepository.deleteAll();
+    }
+
     @Test
     public void createCourseRepositoryCountIsOneTest(){
         Course course = new Course();
         course.setCreditUnit(6);
-        course.setCourseId("BCHM411");
+        course.setCourseCode("BCHM411");
         course.setTitle("Metabolism");
         course.setDepartment("Biochemistry");
 
@@ -35,7 +47,7 @@ public class CourseRepositoryTest {
     public void createCourse_findByIdReturnsCourseTest(){
         Course course = new Course();
         course.setCreditUnit(6);
-        course.setCourseId("BCHM411");
+        course.setCourseCode("BCHM411");
         course.setTitle("Metabolism");
         course.setDepartment("Biochemistry");
 

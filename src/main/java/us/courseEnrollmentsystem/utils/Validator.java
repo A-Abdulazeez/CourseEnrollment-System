@@ -29,7 +29,7 @@ public class Validator {
 
     public static void validateCourseRequest(CreateCourseRequest courseRequest){
         if (courseRequest == null) throw new CourseException("Course request cannot be null");
-        if (courseRequest.getCourseId() == null || courseRequest.getCourseId().isEmpty()) throw new CourseException("Course id cannot be empty");
+        if (courseRequest.getCourseCode() == null || courseRequest.getCourseCode().isEmpty()) throw new CourseException("Course id cannot be empty");
         if (courseRequest.getTitle() == null || courseRequest.getTitle().isEmpty()) throw new CourseException("Course title cannot be empty");
         if (courseRequest.getCreditUnit() == 0 ) throw  new CourseException("Credit unit cannot be empty");
         if (courseRequest.getDepartment() == null || courseRequest.getDepartment().isEmpty()) throw  new CourseException("Department name cannot be empty");

@@ -60,7 +60,7 @@ public class Mapper {
 
     public static Course map(CreateCourseRequest courseRequest){
         Course course = new Course();
-        course.setCourseId(courseRequest.getCourseId());
+        course.setCourseCode(courseRequest.getCourseCode());
         course.setTitle(courseRequest.getTitle());
         course.setCreditUnit(courseRequest.getCreditUnit());
         course.setDepartment(courseRequest.getDepartment());
@@ -70,10 +70,11 @@ public class Mapper {
 
     public static CreateCourseResponse map(Course course){
         CreateCourseResponse courseResponse = new CreateCourseResponse();
-        courseResponse.setCourseId(course.getCourseId());
+        courseResponse.setCourseCode(course.getCourseCode());
         courseResponse.setTitle(course.getTitle());
         courseResponse.setCreditUnit(course.getCreditUnit());
         courseResponse.setDepartment(course.getDepartment());
+        courseResponse.setMessage("Course created successfully");
 
         return courseResponse;
     }

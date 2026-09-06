@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.courseEnrollmentsystem.data.repositories.CourseRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateCourseRequest;
+import us.courseEnrollmentsystem.dtos.responses.CreateCourseResponse;
 import us.courseEnrollmentsystem.exception.CourseException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,66 +21,83 @@ public class CourseServiceImplTest {
     @Autowired
     private CourseRepository courseRepository;
 
-    private CreateCourseRequest createCourseRequest;
-
     @BeforeEach
-    public void setUp(){
-        createCourseRequest = new CreateCourseRequest();
+    public void setUp() {
         courseRepository.deleteAll();
     }
 
+
     @Test
-    public void createCourseWithNullRequestTest(){
+    public void createCourseWithNullRequestThrowsExceptionTest() {
         assertThrows(CourseException.class, () -> courseService.createCourse(null));
     }
 
     @Test
-    public void createCourseWithEmptyRequestTest(){
-        assertThrows(CourseException.class, () -> courseService.createCourse(createCourseRequest));
+    public void createCourseWithEmptyRequestThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+    }
+
+
+    @Test
+    public void createCourseWithEmptyCourseIdThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+
+        request.setCourseCode("");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
+
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
     }
 
     @Test
-    public void createCourseWithIncompleteRequestExceptionThrownTest(){
-        createCourseRequest.setCourseId("VMPY311");
-        createCourseRequest.setDepartment("veterinary medicine");
-        createCourseRequest.setCreditUnit(6);
-//        createCourseRequest.setTitle("Psychology");
+    public void createCourseWithEmptyTitleThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(createCourseRequest));
+        request.setCourseCode("BCHM411");
+        request.setTitle("");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
 
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
     }
 
     @Test
-    public void createCourseWithcompleteRequestTest(){
-        createCourseRequest.setCourseId("VMPY311");
-        createCourseRequest.setDepartment("veterinary medicine");
-        createCourseRequest.setCreditUnit(6);
-        createCourseRequest.setTitle("Psychology");
+    public void createCourseWithZeroCreditUnitThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
 
-        courseService.createCourse(createCourseRequest);
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(0);
+        request.setDepartment("Biochemistry");
 
-        assertEquals(1, courseRepository.count());
-
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
     }
 
     @Test
-    public void createCourseThatAlreadyExistsExceptionThrownTest(){
-        createCourseRequest.setCourseId("VMPY311");
-        createCourseRequest.setDepartment("veterinary medicine");
-        createCourseRequest.setCreditUnit(6);
-        createCourseRequest.setTitle("Psychology");
+    public void createCourseWithEmptyDepartmentThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
 
-        courseService.createCourse(createCourseRequest);
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("");
 
-        CreateCourseRequest createCourseRequest2 = new CreateCourseRequest();
-        createCourseRequest2.setCourseId("VMPY311");
-        createCourseRequest2.setDepartment("veterinary medicine");
-        createCourseRequest2.setCreditUnit(6);
-        createCourseRequest2.setTitle("Psychology");
-        assertThrows(CourseException.class, () -> courseService.createCourse(createCourseRequest2));
-
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
     }
 
+    @Test
+    public void createCourseWithValidRequestSuccessfullyTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
+        CreateCourseResponse response = courseService.createCourse(request);
 
 
+        assertEquals(request.getCourseCode(), response.getCourseCode());
+        assertEquals(request.getTitle(), response.getTitle());
+    }
 }

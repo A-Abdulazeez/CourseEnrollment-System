@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 public class Course {
 
     @Id
-    private String courseId;
+    private String courseCode;
     private String title;
     private int creditUnit;
     private String department;
