@@ -26,7 +26,8 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public CreateCourseResponse createCourse(CreateCourseRequest courseRequest) {
+    public CreateCourseResponse createCourse(String email, CreateCourseRequest courseRequest) {
+        if (!email.equals("admin@administration.com")) throw new CourseException("Only admin can create courses");
         validateCourseRequest(courseRequest);
 
         Optional<Course> existingCourse = courseRepository.findById(courseRequest.getCourseCode());
@@ -58,7 +59,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public UpdateCourseResponse updateCourse(String courseCode, UpdateCourseRequest updateRequest) {
+    public UpdateCourseResponse updateCourse(String email, String courseCode, UpdateCourseRequest updateRequest) {
+        if (!email.equals("admin@administration.com")) throw new CourseException("Only admin can update courses");
         if (courseCode == null || courseCode.isEmpty() ) throw new CourseException("Course code cannot be null or empty");
         validateUpdateCourseRequest(updateRequest);
 
@@ -77,7 +79,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public String deleteCourse(String courseCode) {
+    public String deleteCourse(String email, String courseCode) {
+        if (!email.equals("admin@administration.com")) throw new CourseException("Only admin can delete courses");
         if (courseCode == null || courseCode.isEmpty()) throw new CourseException("Course code cannot be null or empty");
 
         Optional<Course> existingCourse = courseRepository.findById(courseCode);

@@ -37,65 +37,59 @@ public class CourseServiceImplTest {
         courseRepository.deleteAll();
     }
 
-
     @Test
     public void createCourseWithNullRequestThrowsExceptionTest() {
-        assertThrows(CourseException.class, () -> courseService.createCourse(null));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", null));
     }
 
     @Test
     public void createCourseWithEmptyRequestThrowsExceptionTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
     }
-
 
     @Test
     public void createCourseWithEmptyCourseIdThrowsExceptionTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-
         request.setCourseCode("");
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
     }
 
     @Test
     public void createCourseWithEmptyTitleThrowsExceptionTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-
         request.setCourseCode("BCHM411");
         request.setTitle("");
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
     }
 
     @Test
     public void createCourseWithZeroCreditUnitThrowsExceptionTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-
         request.setCourseCode("BCHM411");
         request.setTitle("Metabolism");
         request.setCreditUnit(0);
         request.setDepartment("Biochemistry");
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
     }
 
     @Test
     public void createCourseWithEmptyDepartmentThrowsExceptionTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-
         request.setCourseCode("BCHM411");
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("");
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
     }
 
     @Test
@@ -106,9 +100,20 @@ public class CourseServiceImplTest {
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
 
-        courseService.createCourse(request);
+        courseService.createCourse("admin@administration.com", request);
 
-        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+        assertThrows(CourseException.class, () -> courseService.createCourse("admin@administration.com", request));
+    }
+
+    @Test
+    public void createCourseWithNonAdminEmailThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
+
+        assertThrows(CourseException.class, () -> courseService.createCourse("student@gmail.com", request));
     }
 
     @Test
@@ -118,8 +123,8 @@ public class CourseServiceImplTest {
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
-        CreateCourseResponse response = courseService.createCourse(request);
 
+        CreateCourseResponse response = courseService.createCourse("admin@administration.com", request);
 
         assertEquals(request.getCourseCode(), response.getCourseCode());
         assertEquals(request.getTitle(), response.getTitle());
@@ -143,12 +148,12 @@ public class CourseServiceImplTest {
     @Test
     public void getCourseByCodeReturnsCourseTest() {
         CreateCourseRequest request = new CreateCourseRequest();
-
         request.setCourseCode("BCHM401");
         request.setTitle("Enzymology");
         request.setCreditUnit(8);
         request.setDepartment("Biochemistry");
-        courseService.createCourse(request);
+
+        courseService.createCourse("admin@administration.com", request);
 
         Course course = courseService.getCourseByCode("BCHM401");
 
@@ -167,14 +172,16 @@ public class CourseServiceImplTest {
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
-        courseService.createCourse(request);
+
+        courseService.createCourse("admin@administration.com", request);
 
         CreateCourseRequest request2 = new CreateCourseRequest();
         request2.setCourseCode("BCHM412");
         request2.setTitle("Food Biochemistry");
         request2.setCreditUnit(6);
         request2.setDepartment("Biochemistry");
-        courseService.createCourse(request2);
+
+        courseService.createCourse("admin@administration.com", request2);
 
         List<Course> courses = courseService.getAllCourses();
 
@@ -184,18 +191,20 @@ public class CourseServiceImplTest {
     @Test
     public void updateCourseWithNullCodeThrowsExceptionTest() {
         UpdateCourseRequest updateRequest = new UpdateCourseRequest();
-        assertThrows(CourseException.class, () -> courseService.updateCourse(null, updateRequest));
+
+        assertThrows(CourseException.class, () -> courseService.updateCourse("admin@administration.com", null, updateRequest));
     }
 
     @Test
     public void updateCourseWithEmptyCodeThrowsExceptionTest() {
         UpdateCourseRequest updateRequest = new UpdateCourseRequest();
-        assertThrows(CourseException.class, () -> courseService.updateCourse("", updateRequest));
+
+        assertThrows(CourseException.class, () -> courseService.updateCourse("admin@administration.com", "", updateRequest));
     }
 
     @Test
     public void updateCourseWithNullRequestThrowsExceptionTest() {
-        assertThrows(CourseException.class, () -> courseService.updateCourse("BCHM411", null));
+        assertThrows(CourseException.class, () -> courseService.updateCourse("admin@administration.com", "BCHM411", null));
     }
 
     @Test
@@ -205,16 +214,27 @@ public class CourseServiceImplTest {
         createRequest.setTitle("Metabolism");
         createRequest.setCreditUnit(6);
         createRequest.setDepartment("Biochemistry");
-        courseService.createCourse(createRequest);
 
+        courseService.createCourse("admin@administration.com", createRequest);
+
+        UpdateCourseRequest updateRequest = new UpdateCourseRequest();
+
+        updateRequest.setTitle("Advanced Metabolism");
+        updateRequest.setCreditUnit(4);
+        updateRequest.setDepartment("Biochemistry");
+
+        assertThrows(CourseException.class, () -> courseService.updateCourse("admin@administration.com", "BCHM999", updateRequest));
+    }
+
+    @Test
+    public void updateCourseWithNonAdminEmailThrowsExceptionTest() {
         UpdateCourseRequest updateRequest = new UpdateCourseRequest();
         updateRequest.setTitle("Advanced Metabolism");
         updateRequest.setCreditUnit(4);
         updateRequest.setDepartment("Biochemistry");
 
-        assertThrows(CourseException.class, () -> courseService.updateCourse("BCHM999", updateRequest));
+        assertThrows(CourseException.class, () -> courseService.updateCourse("student@gmail.com", "BCHM411", updateRequest));
     }
-
 
     @Test
     public void updateCourseUpdatesCourseSuccessfullyTest() {
@@ -223,14 +243,15 @@ public class CourseServiceImplTest {
         createRequest.setTitle("Metabolism");
         createRequest.setCreditUnit(6);
         createRequest.setDepartment("Biochemistry");
-        courseService.createCourse(createRequest);
+
+        courseService.createCourse("admin@administration.com", createRequest);
 
         UpdateCourseRequest updateRequest = new UpdateCourseRequest();
         updateRequest.setTitle("Advanced Metabolism");
         updateRequest.setCreditUnit(4);
         updateRequest.setDepartment("Biochemistry");
 
-        UpdateCourseResponse response = courseService.updateCourse("BCHM411", updateRequest);
+        UpdateCourseResponse response = courseService.updateCourse("admin@administration.com", "BCHM411", updateRequest);
 
         assertEquals(updateRequest.getTitle(), response.getTitle());
         assertEquals(updateRequest.getDepartment(), response.getDepartment());
@@ -244,35 +265,40 @@ public class CourseServiceImplTest {
         createRequest.setTitle("Metabolism");
         createRequest.setCreditUnit(6);
         createRequest.setDepartment("Biochemistry");
-        courseService.createCourse(createRequest);
+
+        courseService.createCourse("admin@administration.com", createRequest);
 
         UpdateCourseRequest updateRequest = new UpdateCourseRequest();
         updateRequest.setTitle("Advanced Metabolism");
         updateRequest.setCreditUnit(4);
         updateRequest.setDepartment("Biochemistry");
-        courseService.updateCourse("BCHM411", updateRequest);
+
+        courseService.updateCourse("admin@administration.com", "BCHM411", updateRequest);
 
         Optional<Course> result = courseRepository.findById("BCHM411");
-
         assertEquals(result.get().getCourseCode(), createRequest.getCourseCode());
         assertEquals(result.get().getTitle(), updateRequest.getTitle());
         assertEquals(result.get().getDepartment(), updateRequest.getDepartment());
-
     }
 
     @Test
     public void deleteCourseWithNullCodeThrowsExceptionTest() {
-        assertThrows(CourseException.class, () -> courseService.deleteCourse(null));
+        assertThrows(CourseException.class, () -> courseService.deleteCourse("admin@administration.com", null));
     }
 
     @Test
     public void deleteCourseWithEmptyCodeThrowsExceptionTest() {
-        assertThrows(CourseException.class, () -> courseService.deleteCourse(""));
+        assertThrows(CourseException.class, () -> courseService.deleteCourse("admin@administration.com", ""));
     }
 
     @Test
     public void deleteCourseWithWrongCodeThrowsExceptionTest() {
-        assertThrows(CourseException.class, () -> courseService.deleteCourse("BCHM999"));
+        assertThrows(CourseException.class, () -> courseService.deleteCourse("admin@administration.com", "BCHM999"));
+    }
+
+    @Test
+    public void deleteCourseWithNonAdminEmailThrowsExceptionTest() {
+        assertThrows(CourseException.class, () -> courseService.deleteCourse("student@gmail.com", "BCHM411"));
     }
 
     @Test
@@ -282,11 +308,12 @@ public class CourseServiceImplTest {
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("Biochemistry");
-        courseService.createCourse(request);
 
-        courseService.deleteCourse("BCHM411");
+        courseService.createCourse("admin@administration.com", request);
 
+        courseService.deleteCourse("admin@administration.com", "BCHM411");
         Optional<Course> result = courseRepository.findById("BCHM411");
+
         assertTrue(result.isEmpty());
     }
 

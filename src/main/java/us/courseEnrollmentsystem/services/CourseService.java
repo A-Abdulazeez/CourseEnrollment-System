@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface CourseService {
 
-    CreateCourseResponse createCourse(CreateCourseRequest courseRequest);
+    CreateCourseResponse createCourse(String email, CreateCourseRequest courseRequest);
 
     Course getCourseByCode(String courseCode);
 
     List<Course> getAllCourses();
 
-    UpdateCourseResponse updateCourse(String courseCode, UpdateCourseRequest updateRequest);
+    UpdateCourseResponse updateCourse(String email, String courseCode, UpdateCourseRequest updateRequest);
 
-    String deleteCourse(String courseCode);
+    String deleteCourse(String email, String courseCode);
 }

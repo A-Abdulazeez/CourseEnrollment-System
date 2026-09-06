@@ -18,8 +18,8 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/create-course")
-    public CreateCourseResponse createCourse (@RequestBody CreateCourseRequest createCourseRequest){
-        return courseService.createCourse(createCourseRequest);
+    public CreateCourseResponse createCourse(@RequestHeader("email") String email, @RequestBody CreateCourseRequest createCourseRequest) {
+        return courseService.createCourse(email, createCourseRequest);
     }
 
     @GetMapping("/course-code/{courseCode}")
@@ -33,12 +33,12 @@ public class CourseController {
     }
 
     @PutMapping("/update-course/{courseCode}")
-    public UpdateCourseResponse updateCourse(@PathVariable("courseCode") String courseCode, @RequestBody UpdateCourseRequest updateCourseRequest) {
-        return courseService.updateCourse(courseCode, updateCourseRequest);
+    public UpdateCourseResponse updateCourse(@RequestHeader("email") String email, @PathVariable("courseCode") String courseCode, @RequestBody UpdateCourseRequest updateCourseRequest) {
+        return courseService.updateCourse(email, courseCode, updateCourseRequest);
     }
 
     @DeleteMapping("/delete-course/{courseCode}")
-    public String deleteCourse(@PathVariable("courseCode") String courseCode) {
-        return courseService.deleteCourse(courseCode);
+    public String deleteCourse(@RequestHeader("email") String email, @PathVariable("courseCode") String courseCode) {
+        return courseService.deleteCourse(email, courseCode);
     }
 }
