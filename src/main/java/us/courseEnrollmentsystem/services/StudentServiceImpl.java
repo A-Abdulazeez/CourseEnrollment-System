@@ -8,6 +8,8 @@ import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
 import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
 import us.courseEnrollmentsystem.exception.StudentException;
 
+import java.util.List;
+
 import static us.courseEnrollmentsystem.utils.Mapper.map;
 import static us.courseEnrollmentsystem.utils.Mapper.mapUpdate;
 import static us.courseEnrollmentsystem.utils.Validator.validateStudentRequest;
@@ -44,5 +46,14 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.save(student);
 
         return mapUpdate(student);
+    }
+
+    @Override
+    public List<Student> getAllStudents() {
+        List<Student> students = studentRepository.findAll();
+
+        if (students.isEmpty()) throw new StudentException("Student list is empty");
+
+        return students;
     }
 }
