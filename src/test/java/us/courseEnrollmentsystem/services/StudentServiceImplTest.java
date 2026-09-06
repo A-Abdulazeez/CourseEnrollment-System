@@ -1,11 +1,16 @@
 package us.courseEnrollmentsystem.services;
 
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import us.courseEnrollmentsystem.data.models.Student;
+import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.RegisterStudentRequest;
+import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
+import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
 import us.courseEnrollmentsystem.exception.StudentException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +24,20 @@ public class StudentServiceImplTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+
+    @BeforeEach
+    public void setup(){
+        studentRepository.deleteAll();
+    }
+
+    @AfterEach
+    public void tearDown(){
+        studentRepository.deleteAll();
+    }
 
 
 
@@ -54,4 +73,69 @@ public class StudentServiceImplTest {
         assertEquals(request.getName(), student.getName());
         assertEquals(request.getDepartment(), student.getDepartment());
     }
+
+    @Test
+    public void updateStudentWithNullEmailThrowsException() {
+        UpdateStudentRequest updateRequest = new UpdateStudentRequest();
+        assertThrows( StudentException.class, () -> studentService.updateStudent(null, updateRequest) );
+    }
+
+    @Test
+    public void updateStudentWithEmptyEmailThrowsException() {
+        UpdateStudentRequest updateRequest = new UpdateStudentRequest();
+        assertThrows( StudentException.class, () -> studentService.updateStudent("", updateRequest) );
+    }
+
+    @Test
+    public void updateStudentWithNullRequestThrowsException() {
+        assertThrows( StudentException.class, () -> studentService.updateStudent("az@gmail.com", null) );
+    }
+
+    @Test
+    public void updateStudentWithWrongEmailThrowsException() {
+        UpdateStudentRequest updateRequest = new UpdateStudentRequest();
+        updateRequest.setName("Azeez");
+        updateRequest.setDepartment("Biochemistry");
+        updateRequest.setPassword("123456");
+        assertThrows( StudentException.class, () -> studentService.updateStudent( "wrong@email.com", updateRequest ) );
+    }
+
+    @Test
+    public void updateStudentSuccessfullyFromDbTest() {
+        RegisterStudentRequest registerRequest = new RegisterStudentRequest();
+        registerRequest.setName("Azeez");
+        registerRequest.setEmail("opeyemi@gmail.com");
+        registerRequest.setDepartment("Biochemistry");
+        registerRequest.setPassword("123456");
+        authService.registerStudent(registerRequest);
+
+        UpdateStudentRequest updateRequest = new UpdateStudentRequest();
+        updateRequest.setName("Azeez Abdullahi");
+        updateRequest.setDepartment("Computer Science");
+        updateRequest.setPassword("changed");
+        UpdateStudentResponse response = studentService.updateStudent( "opeyemi@gmail.com", updateRequest );
+
+        assertNotNull(response);
+        assertEquals("Azeez Abdullahi", response.getName());
+        assertEquals("Computer Science", response.getDepartment());
+        assertEquals("Update Successful", response.getMessage());
+    }
+
+    @Test
+    public void updateStudentKeepsEmailUnchangedTest() {
+        RegisterStudentRequest registerRequest = new RegisterStudentRequest();
+        registerRequest.setName("Azeez");
+        registerRequest.setEmail("az@gmail.com");
+        registerRequest.setDepartment("Biochemistry");
+        registerRequest.setPassword("123456");
+        authService.registerStudent(registerRequest);
+
+        UpdateStudentRequest updateRequest = new UpdateStudentRequest();
+        updateRequest.setName("Azeez Abdullahi");
+        updateRequest.setDepartment("Computer Science");
+        updateRequest.setPassword("654321");
+        studentService.updateStudent( "az@gmail.com", updateRequest );
+
+        Student student = studentRepository.findByEmail("az@gmail.com");
+        assertEquals(registerRequest.getEmail() , student.getEmail()); }
 }
