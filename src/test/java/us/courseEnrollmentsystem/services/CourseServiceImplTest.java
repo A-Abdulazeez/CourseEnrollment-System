@@ -16,8 +16,7 @@ import us.courseEnrollmentsystem.exception.CourseException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class CourseServiceImplTest {
@@ -95,6 +94,19 @@ public class CourseServiceImplTest {
         request.setTitle("Metabolism");
         request.setCreditUnit(6);
         request.setDepartment("");
+
+        assertThrows(CourseException.class, () -> courseService.createCourse(request));
+    }
+
+    @Test
+    public void createCourseWithExistingCourseCodeThrowsExceptionTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
+
+        courseService.createCourse(request);
 
         assertThrows(CourseException.class, () -> courseService.createCourse(request));
     }
@@ -246,6 +258,36 @@ public class CourseServiceImplTest {
         assertEquals(result.get().getTitle(), updateRequest.getTitle());
         assertEquals(result.get().getDepartment(), updateRequest.getDepartment());
 
+    }
+
+    @Test
+    public void deleteCourseWithNullCodeThrowsExceptionTest() {
+        assertThrows(CourseException.class, () -> courseService.deleteCourse(null));
+    }
+
+    @Test
+    public void deleteCourseWithEmptyCodeThrowsExceptionTest() {
+        assertThrows(CourseException.class, () -> courseService.deleteCourse(""));
+    }
+
+    @Test
+    public void deleteCourseWithWrongCodeThrowsExceptionTest() {
+        assertThrows(CourseException.class, () -> courseService.deleteCourse("BCHM999"));
+    }
+
+    @Test
+    public void deleteCourseSuccessfullyDeletesCourseTest() {
+        CreateCourseRequest request = new CreateCourseRequest();
+        request.setCourseCode("BCHM411");
+        request.setTitle("Metabolism");
+        request.setCreditUnit(6);
+        request.setDepartment("Biochemistry");
+        courseService.createCourse(request);
+
+        courseService.deleteCourse("BCHM411");
+
+        Optional<Course> result = courseRepository.findById("BCHM411");
+        assertTrue(result.isEmpty());
     }
 
 }

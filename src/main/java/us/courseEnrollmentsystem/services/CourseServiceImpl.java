@@ -77,7 +77,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public String deleteCourse(String courseId) {
-        return null;
+    public String deleteCourse(String courseCode) {
+        if (courseCode == null || courseCode.isEmpty()) throw new CourseException("Course code cannot be null or empty");
+
+        Optional<Course> existingCourse = courseRepository.findById(courseCode);
+        if (existingCourse.isEmpty()) throw new CourseException("Course with code " + courseCode + " not found");
+
+        courseRepository.delete(existingCourse.get());
+
+        return "course with code " + courseCode + " deleted";
     }
 }
