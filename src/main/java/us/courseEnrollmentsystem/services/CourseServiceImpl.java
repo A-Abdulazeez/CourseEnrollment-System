@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static us.courseEnrollmentsystem.utils.Mapper.map;
+import static us.courseEnrollmentsystem.utils.Mapper.mapUpdate;
 import static us.courseEnrollmentsystem.utils.Validator.validateCourseRequest;
+import static us.courseEnrollmentsystem.utils.Validator.validateUpdateCourseRequest;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -48,12 +50,30 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getAllCourses() {
-        return null;
+        List<Course> courses = courseRepository.findAll();
+
+        if (courses.isEmpty()) throw new CourseException("Course list is empty");
+
+        return courses;
     }
 
     @Override
     public UpdateCourseResponse updateCourse(String courseCode, UpdateCourseRequest updateRequest) {
-        return null;
+        if (courseCode == null || courseCode.isEmpty() ) throw new CourseException("Course code cannot be null or empty");
+        validateUpdateCourseRequest(updateRequest);
+
+        Optional<Course> course = courseRepository.findById(courseCode);
+        if (course.isEmpty()) throw new CourseException("Course with code " + courseCode + " not found");
+
+        Course existingCourse = course.get();
+        Course updatedCourse = map(updateRequest);
+
+        existingCourse.setTitle(updatedCourse.getTitle());
+        existingCourse.setCreditUnit(updatedCourse.getCreditUnit());
+        existingCourse.setDepartment(updatedCourse.getDepartment());
+        courseRepository.save(existingCourse);
+
+        return mapUpdate(existingCourse);
     }
 
     @Override

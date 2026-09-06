@@ -4,14 +4,8 @@ import us.courseEnrollmentsystem.data.models.Admin;
 import us.courseEnrollmentsystem.data.models.Course;
 import us.courseEnrollmentsystem.data.models.Role;
 import us.courseEnrollmentsystem.data.models.Student;
-import us.courseEnrollmentsystem.dtos.requests.CreateCourseRequest;
-import us.courseEnrollmentsystem.dtos.requests.LoginRequest;
-import us.courseEnrollmentsystem.dtos.requests.RegisterStudentRequest;
-import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
-import us.courseEnrollmentsystem.dtos.responses.CreateCourseResponse;
-import us.courseEnrollmentsystem.dtos.responses.LoginResponse;
-import us.courseEnrollmentsystem.dtos.responses.RegisterStudentResponse;
-import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
+import us.courseEnrollmentsystem.dtos.requests.*;
+import us.courseEnrollmentsystem.dtos.responses.*;
 
 public class Mapper {
 
@@ -94,6 +88,26 @@ public class Mapper {
         response.setName(student.getName());
         response.setDepartment(student.getDepartment());
         response.setMessage("Update Successful");
+
+        return response;
+    }
+
+    public static Course map(UpdateCourseRequest updateRequest) {
+        Course course = new Course();
+        course.setTitle(updateRequest.getTitle());
+        course.setCreditUnit(updateRequest.getCreditUnit());
+        course.setDepartment(updateRequest.getDepartment());
+
+        return course;
+    }
+
+    public static UpdateCourseResponse mapUpdate(Course course) {
+        UpdateCourseResponse response = new UpdateCourseResponse();
+        response.setCourseCode(course.getCourseCode());
+        response.setTitle(course.getTitle());
+        response.setCreditUnit(course.getCreditUnit());
+        response.setDepartment(course.getDepartment());
+        response.setMessage("Course update successful");
 
         return response;
     }
