@@ -13,6 +13,8 @@ import us.courseEnrollmentsystem.dtos.requests.UpdateStudentRequest;
 import us.courseEnrollmentsystem.dtos.responses.UpdateStudentResponse;
 import us.courseEnrollmentsystem.exception.StudentException;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -138,4 +140,31 @@ public class StudentServiceImplTest {
 
         Student student = studentRepository.findByEmail("az@gmail.com");
         assertEquals(registerRequest.getEmail() , student.getEmail()); }
+
+    @Test
+    public void getAllStudentsWithNoStudentsThrowsExceptionTest() {
+        assertThrows(StudentException.class, () -> studentService.getAllStudents());
+    }
+
+    @Test
+    public void getAllStudentsReturnsStudentsListTest() {
+
+        RegisterStudentRequest request = new RegisterStudentRequest();
+        request.setName("Azeez");
+        request.setEmail("az@gmail.com");
+        request.setDepartment("Biochemistry");
+        request.setPassword("123456");
+        authService.registerStudent(request);
+
+        RegisterStudentRequest request2 = new RegisterStudentRequest();
+        request2.setName("Azeez skipp");
+        request2.setEmail("a2z@gmail.com");
+        request2.setDepartment("Biochemistry");
+        request2.setPassword("654321");
+        authService.registerStudent(request2);
+
+        List<Student> students = studentService.getAllStudents();
+
+        assertEquals(2, students.size());
+    }
 }
