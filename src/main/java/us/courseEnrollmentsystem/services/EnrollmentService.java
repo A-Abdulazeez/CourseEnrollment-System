@@ -12,7 +12,7 @@ public interface EnrollmentService {
 
     CreateEnrollmentResponse createEnrollment(CreateEnrollmentRequest enrollmentRequest);
 
-    AddCourseResponse addCourse(String enrollmentId, String courseCode);
+    AddCourseResponse addCourse( String email, String enrollmentId, String courseCode);
 
     RemoveCourseResponse removeCourse(String enrollmentId, String courseCode);
 

@@ -3,6 +3,7 @@ package us.courseEnrollmentsystem.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import us.courseEnrollmentsystem.data.models.Enrollment;
+import us.courseEnrollmentsystem.data.models.Student;
 import us.courseEnrollmentsystem.data.repositories.CourseRepository;
 import us.courseEnrollmentsystem.data.repositories.EnrollmentRepository;
 import us.courseEnrollmentsystem.data.repositories.StudentRepository;
@@ -53,14 +54,25 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public AddCourseResponse addCourse(String enrollmentId, String courseCode) {
+    public AddCourseResponse addCourse(String email, String enrollmentId, String courseCode) {
+        if (email == null || email.isEmpty()) throw new EnrollmentException("Email cannot be null or empty");
         if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
         if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
 
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) throw new EnrollmentException("Student not found");
 
-        if (courseRepository.findById(courseCode).isEmpty()) throw new EnrollmentException("Course with code " + courseCode + " does not exist");
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (!student.getStudentId().equals(enrollment.getStudentId()))
+            throw new EnrollmentException("You Cant Add Course To Enrollment");
+
+        if (courseRepository.findById(courseCode).isEmpty())
+            throw new EnrollmentException("Course with code " + courseCode + " does not exist");
+
         if (enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course already added to enrollment");
+
         enrollment.getCourseCodes().add(courseCode);
         enrollmentRepository.save(enrollment);
 

@@ -214,26 +214,25 @@ public class EnrollmentServiceImplTest {
     }
 
     @Test
-    public void addCourseThatDoesNotExistThrowsExceptionTest() {
-        Enrollment enrollment = new Enrollment();
-        enrollment.setSession(2027);
-        enrollment.setSemester(Semester.FIRST_SEMESTER);
-        enrollment.setStudentId("STUDENT001");
-        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
-        enrollmentRepository.save(enrollment);
-
-        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM999"));
+    public void addCourseWithStudentThatDoesNotExistThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("unknown@gmail.com", "12345", "BCHM411"));
     }
 
 
     @Test
-    public void addCourseToEnrollmentThatDoesNotExistThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("INVALID_ENROLLMENT_ID", "BCHM411"));
+    public void addCourseWithEmptyEmailThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("", "12345", "BCHM411"));
     }
-
 
     @Test
     public void addCourseAlreadyInEnrollmentThrowsExceptionTest() {
+        Student student = new Student();
+        student.setName("Az Maya");
+        student.setEmail("maya@gmail.com");
+        student.setPassword("Password123");
+        student.setDepartment("Biochemistry");
+        studentRepository.save(student);
+
         Course course = new Course();
         course.setCourseCode("BCHM411");
         course.setTitle("Metabolism");
@@ -248,23 +247,30 @@ public class EnrollmentServiceImplTest {
         enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
         enrollmentRepository.save(enrollment);
 
-        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM411"));
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse(student.getEmail() ,enrollment.getEnrollmentId(), "BCHM411"));
     }
 
 
     @Test
     public void addCourseWithEmptyEnrollmentIdThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("", "BCHM411"));
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("john@gmail.com", "", "BCHM411"));
     }
 
 
     @Test
     public void addCourseWithEmptyCourseCodeThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("12345", ""));
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("12345", "ENROLL111", ""));
     }
 
     @Test
-    public void addCourseToEnrollmentSuccessfullyTest() {
+    public void addCourseSuccessfullyTest() {
+        Student student = new Student();
+        student.setName("Az Maya");
+        student.setEmail("maya@gmail.com");
+        student.setPassword("Password123");
+        student.setDepartment("Biochemistry");
+        studentRepository.save(student);
+
         Course course = new Course();
         course.setCourseCode("BCHM412");
         course.setTitle("Enzymology");
@@ -275,14 +281,48 @@ public class EnrollmentServiceImplTest {
         Enrollment enrollment = new Enrollment();
         enrollment.setSession(2027);
         enrollment.setSemester(Semester.FIRST_SEMESTER);
-        enrollment.setStudentId("STUDENT001");
+        enrollment.setStudentId(student.getStudentId());
         enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
         enrollmentRepository.save(enrollment);
 
-        AddCourseResponse response = enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM412");
+        AddCourseResponse response = enrollmentService.addCourse(student.getEmail(), enrollment.getEnrollmentId(), "BCHM412");
 
         assertEquals(2, response.getCourseCodes().size());
         assertTrue(response.getCourseCodes().contains("BCHM412"));
+
+    }
+
+    @Test
+    public void studentCannotAddCourseToAnotherStudentsEnrollmentTest() {
+        Student student1 = new Student();
+        student1.setName("Azeez");
+        student1.setEmail("Azeez@gmail.com");
+        student1.setPassword("Password123");
+        student1.setDepartment("Biochemistry");
+        studentRepository.save(student1);
+
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
+        Course course = new Course();
+        course.setCourseCode("BCHM412");
+        course.setTitle("Enzymology");
+        course.setCreditUnit(4);
+        course.setDepartment("Biochemistry");
+        courseRepository.save(course);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId(student1.getStudentId());
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("Azeezat@gmail.com", enrollment.getEnrollmentId(), "BCHM412"));
     }
 
 
