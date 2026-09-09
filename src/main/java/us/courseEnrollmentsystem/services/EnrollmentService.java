@@ -4,6 +4,7 @@ import us.courseEnrollmentsystem.data.models.Enrollment;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
 import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
+import us.courseEnrollmentsystem.dtos.responses.RemoveCourseResponse;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface EnrollmentService {
 
     AddCourseResponse addCourse(String enrollmentId, String courseCode);
 
-    Enrollment removeCourse(String enrollmentId, String courseCode);
+    RemoveCourseResponse removeCourse(String enrollmentId, String courseCode);
 
     Enrollment getEnrollmentById(String enrollmentId);
 

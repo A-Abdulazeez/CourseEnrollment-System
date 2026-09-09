@@ -15,6 +15,7 @@ import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
 import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
+import us.courseEnrollmentsystem.dtos.responses.RemoveCourseResponse;
 import us.courseEnrollmentsystem.exception.EnrollmentException;
 
 import java.time.Year;
@@ -284,4 +285,76 @@ public class EnrollmentServiceImplTest {
         assertTrue(response.getCourseCodes().contains("BCHM412"));
     }
 
+
+    @Test
+    public void removeCourseFromEnrollmentThatDoesNotExistThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("INVALID_ENROLLMENT_ID", "BCHM411"));
+    }
+
+
+    @Test
+    public void removeCourseThatIsNotInEnrollmentThrowsExceptionTest() {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(enrollment.getEnrollmentId(), "BCHM999"));
+    }
+
+
+    @Test
+    public void removeCourseWithEmptyEnrollmentIdThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("", "BCHM411"));
+    }
+
+
+    @Test
+    public void removeCourseWithEmptyCourseCodeThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("12345", ""));
+    }
+
+    @Test
+    public void removeCourseSuccessfullyTest() {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411", "BCHM412")));
+        enrollmentRepository.save(enrollment);
+
+        RemoveCourseResponse response = enrollmentService.removeCourse(enrollment.getEnrollmentId(), "BCHM412");
+
+        assertEquals(enrollment.getEnrollmentId(), response.getEnrollmentId());
+        assertEquals(1, response.getCourseCodes().size());
+        assertFalse(response.getCourseCodes().contains("BCHM412"));
+    }
+
+    @Test
+    public void getEnrollmentByIdThatDoesNotExistThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getEnrollmentById("INVALID_ENROLLMENT_ID"));
+    }
+
+    @Test
+    public void getEnrollmentByIdWithEmptyIdThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getEnrollmentById(""));
+    }
+
+    @Test
+    public void getEnrollmentByIdSuccessfullyTest() {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411", "BCHM412")));
+        enrollmentRepository.save(enrollment);
+
+        Enrollment result = enrollmentService.getEnrollmentById(enrollment.getEnrollmentId());
+        assertEquals("STUDENT001", result.getStudentId());
+        assertEquals(2027, result.getSession());
+        assertEquals(Semester.FIRST_SEMESTER, result.getSemester());
+        assertEquals(2, result.getCourseCodes().size());
+    }
 }

@@ -9,12 +9,12 @@ import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
 import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
+import us.courseEnrollmentsystem.dtos.responses.RemoveCourseResponse;
 import us.courseEnrollmentsystem.exception.EnrollmentException;
 
 import java.util.List;
 
-import static us.courseEnrollmentsystem.utils.Mapper.map;
-import static us.courseEnrollmentsystem.utils.Mapper.mapAddCourse;
+import static us.courseEnrollmentsystem.utils.Mapper.*;
 import static us.courseEnrollmentsystem.utils.Validator.validateEnrollmentRequest;
 
 @Service
@@ -68,13 +68,26 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public Enrollment removeCourse(String enrollmentId, String courseCode) {
-        return null;
+    public RemoveCourseResponse removeCourse(String enrollmentId, String courseCode) {
+        if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
+        if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (!enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course is not in this enrollment");
+        enrollment.getCourseCodes().remove(courseCode);
+        enrollmentRepository.save(enrollment);
+
+        return mapRemoveCourse(enrollment);
     }
 
     @Override
     public Enrollment getEnrollmentById(String enrollmentId) {
-        return null;
+        if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
+
+        return enrollmentRepository.findById(enrollmentId).orElseThrow(() ->
+                        new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
     }
 
     @Override
