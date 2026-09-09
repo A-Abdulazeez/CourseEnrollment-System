@@ -92,11 +92,21 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public List<Enrollment> getStudentEnrollments(String studentId) {
-        return List.of();
+        if (studentId == null || studentId.isEmpty()) throw new EnrollmentException("Student id cannot be null or empty");
+
+        List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
+        if (enrollments.isEmpty()) throw new EnrollmentException("No enrollments found for student " + studentId);
+
+        return enrollments;
     }
 
     @Override
-    public List<Enrollment> getAllEnrollments() {
-        return List.of();
+    public List<Enrollment> getAllEnrollments(String email) {
+        if (!"admin@administration.com".equals(email)) throw new EnrollmentException("Only admin can view all enrollments");
+
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        if (enrollments.isEmpty()) throw new EnrollmentException("Enrollment list is empty");
+
+        return enrollments;
     }
 }

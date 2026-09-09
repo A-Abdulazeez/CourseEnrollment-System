@@ -20,6 +20,6 @@ public interface EnrollmentService {
 
     List<Enrollment> getStudentEnrollments(String studentId);
 
-    List<Enrollment> getAllEnrollments();
+    List<Enrollment> getAllEnrollments(String email);
     }
 

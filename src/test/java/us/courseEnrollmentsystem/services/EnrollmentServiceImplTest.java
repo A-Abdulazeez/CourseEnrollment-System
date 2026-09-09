@@ -357,4 +357,67 @@ public class EnrollmentServiceImplTest {
         assertEquals(Semester.FIRST_SEMESTER, result.getSemester());
         assertEquals(2, result.getCourseCodes().size());
     }
+
+    @Test
+    public void getStudentEnrollmentsWithEmptyStudentIdThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getStudentEnrollments(""));
+    }
+
+
+    @Test
+    public void getStudentEnrollmentsWithNoEnrollmentThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getStudentEnrollments("STUDENT999"));
+    }
+
+    @Test
+    public void getStudentEnrollmentsReturnsAllEnrollmentSuccessfullyTest() {
+        Enrollment enrollment1 = new Enrollment();
+        enrollment1.setSession(2026);
+        enrollment1.setSemester(Semester.FIRST_SEMESTER);
+        enrollment1.setStudentId("STUDENT001");
+        enrollment1.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment1);
+
+        Enrollment enrollment2 = new Enrollment();
+        enrollment2.setSession(2026);
+        enrollment2.setSemester(Semester.SECOND_SEMESTER);
+        enrollment2.setStudentId("STUDENT001");
+        enrollment2.setCourseCodes(new ArrayList<>(List.of("BCHM412")));
+        enrollmentRepository.save(enrollment2);
+
+        List<Enrollment> result = enrollmentService.getStudentEnrollments("STUDENT001");
+        assertEquals(2, result.size());
+    }
+
+
+    @Test
+    public void nonAdminCannotGetAllEnrollmentsTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getAllEnrollments("student@gmail.com"));
+    }
+
+
+    @Test
+    public void getAllEnrollmentsWhenListIsEmptyThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.getAllEnrollments("admin@administration.com"));
+    }
+
+    @Test
+    public void adminCanGetAllEnrollmentsSuccessfullyTest() {
+        Enrollment enrollment1 = new Enrollment();
+        enrollment1.setSession(2026);
+        enrollment1.setSemester(Semester.FIRST_SEMESTER);
+        enrollment1.setStudentId("STUDENT001");
+        enrollment1.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment1);
+
+        Enrollment enrollment2 = new Enrollment();
+        enrollment2.setSession(2027);
+        enrollment2.setSemester(Semester.SECOND_SEMESTER);
+        enrollment2.setStudentId("STUDENT002");
+        enrollment2.setCourseCodes(new ArrayList<>(List.of("BCHM412")));
+        enrollmentRepository.save(enrollment2);
+
+        List<Enrollment> result = enrollmentService.getAllEnrollments("admin@administration.com");
+        assertEquals(2, result.size());
+    }
 }
