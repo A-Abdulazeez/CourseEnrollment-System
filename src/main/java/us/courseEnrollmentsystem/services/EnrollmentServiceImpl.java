@@ -80,13 +80,20 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public RemoveCourseResponse removeCourse(String enrollmentId, String courseCode) {
+    public RemoveCourseResponse removeCourse(String email, String enrollmentId, String courseCode) {
+        if (email == null || email.isEmpty()) throw new EnrollmentException("Email cannot be null or empty");
         if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
         if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
 
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) throw new EnrollmentException("Student not found");
 
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (!student.getStudentId().equals(enrollment.getStudentId())) throw new EnrollmentException("Student cannot remove course from another student's enrollment");
         if (!enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course is not in this enrollment");
+
         enrollment.getCourseCodes().remove(courseCode);
         enrollmentRepository.save(enrollment);
 

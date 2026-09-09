@@ -14,7 +14,7 @@ public interface EnrollmentService {
 
     AddCourseResponse addCourse( String email, String enrollmentId, String courseCode);
 
-    RemoveCourseResponse removeCourse(String enrollmentId, String courseCode);
+    RemoveCourseResponse removeCourse(String email, String enrollmentId, String courseCode);
 
     Enrollment getEnrollmentById(String enrollmentId);
 

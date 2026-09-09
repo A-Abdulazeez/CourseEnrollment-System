@@ -243,7 +243,7 @@ public class EnrollmentServiceImplTest {
         Enrollment enrollment = new Enrollment();
         enrollment.setSession(2027);
         enrollment.setSemester(Semester.FIRST_SEMESTER);
-        enrollment.setStudentId("STUDENT001");
+        enrollment.setStudentId(student.getStudentId());
         enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
         enrollmentRepository.save(enrollment);
 
@@ -328,48 +328,116 @@ public class EnrollmentServiceImplTest {
 
     @Test
     public void removeCourseFromEnrollmentThatDoesNotExistThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("INVALID_ENROLLMENT_ID", "BCHM411"));
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("Azeezat@gmail.com","INVALID_ENROLLMENT_ID", "BCHM411"));
     }
 
 
     @Test
     public void removeCourseThatIsNotInEnrollmentThrowsExceptionTest() {
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
         Enrollment enrollment = new Enrollment();
         enrollment.setSession(2027);
         enrollment.setSemester(Semester.FIRST_SEMESTER);
-        enrollment.setStudentId("STUDENT001");
+        enrollment.setStudentId(student2.getStudentId());
         enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
         enrollmentRepository.save(enrollment);
 
-        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(enrollment.getEnrollmentId(), "BCHM999"));
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(student2.getEmail(), enrollment.getEnrollmentId(), "BCHM999"));
     }
 
 
     @Test
     public void removeCourseWithEmptyEnrollmentIdThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("", "BCHM411"));
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(student2.getEmail(),"", "BCHM411"));
     }
 
 
     @Test
     public void removeCourseWithEmptyCourseCodeThrowsExceptionTest() {
-        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse("12345", ""));
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId(student2.getStudentId());
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(student2.getEmail(), enrollment.getEnrollmentId(), ""));
     }
 
     @Test
     public void removeCourseSuccessfullyTest() {
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
         Enrollment enrollment = new Enrollment();
         enrollment.setSession(2027);
         enrollment.setSemester(Semester.FIRST_SEMESTER);
-        enrollment.setStudentId("STUDENT001");
+        enrollment.setStudentId(student2.getStudentId());
         enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411", "BCHM412")));
         enrollmentRepository.save(enrollment);
 
-        RemoveCourseResponse response = enrollmentService.removeCourse(enrollment.getEnrollmentId(), "BCHM412");
+        RemoveCourseResponse response = enrollmentService.removeCourse(student2.getEmail() ,enrollment.getEnrollmentId(), "BCHM412");
 
         assertEquals(enrollment.getEnrollmentId(), response.getEnrollmentId());
         assertEquals(1, response.getCourseCodes().size());
         assertFalse(response.getCourseCodes().contains("BCHM412"));
+    }
+
+    @Test
+    public void studentCannotRemoveCourseFromAnotherStudentsEnrollmentTest() {
+        Student student = new Student();
+        student.setName("Azeez");
+        student.setEmail("Azeez@gmail.com");
+        student.setPassword("Password123");
+        student.setDepartment("Biochemistry");
+        studentRepository.save(student);
+
+        Student student2 = new Student();
+        student2.setName("Azeezat");
+        student2.setEmail("Azeezat@gmail.com");
+        student2.setPassword("Password123");
+        student2.setDepartment("Biochemistry");
+        studentRepository.save(student2);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId(student.getStudentId());
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.removeCourse(student2.getEmail(), enrollment.getEnrollmentId(), "BCHM411"));
     }
 
     @Test
