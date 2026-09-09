@@ -7,12 +7,14 @@ import us.courseEnrollmentsystem.data.repositories.CourseRepository;
 import us.courseEnrollmentsystem.data.repositories.EnrollmentRepository;
 import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
+import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
 import us.courseEnrollmentsystem.exception.EnrollmentException;
 
 import java.util.List;
 
 import static us.courseEnrollmentsystem.utils.Mapper.map;
+import static us.courseEnrollmentsystem.utils.Mapper.mapAddCourse;
 import static us.courseEnrollmentsystem.utils.Validator.validateEnrollmentRequest;
 
 @Service
@@ -51,8 +53,18 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public Enrollment addCourse(String enrollmentId, String courseCode) {
-        return null;
+    public AddCourseResponse addCourse(String enrollmentId, String courseCode) {
+        if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
+        if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (courseRepository.findById(courseCode).isEmpty()) throw new EnrollmentException("Course with code " + courseCode + " does not exist");
+        if (enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course already added to enrollment");
+        enrollment.getCourseCodes().add(courseCode);
+        enrollmentRepository.save(enrollment);
+
+        return mapAddCourse(enrollment);
     }
 
     @Override

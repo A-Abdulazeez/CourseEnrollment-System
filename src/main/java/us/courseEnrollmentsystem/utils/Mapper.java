@@ -130,4 +130,16 @@ public class Mapper {
 
         return response;
     }
+
+    public static AddCourseResponse mapAddCourse(Enrollment enrollment) {
+        AddCourseResponse response = new AddCourseResponse();
+        response.setEnrollmentId(enrollment.getEnrollmentId());
+        response.setSession(enrollment.getSession());
+        response.setSemester(enrollment.getSemester());
+        response.setCourseCodes(enrollment.getCourseCodes());
+        response.setStudentId(enrollment.getStudentId());
+        response.setMessage("Course added successfully");
+
+        return response;
+    }
 }

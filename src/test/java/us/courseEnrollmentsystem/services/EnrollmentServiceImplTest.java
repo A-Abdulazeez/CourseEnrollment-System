@@ -13,10 +13,12 @@ import us.courseEnrollmentsystem.data.repositories.CourseRepository;
 import us.courseEnrollmentsystem.data.repositories.EnrollmentRepository;
 import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
+import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
 import us.courseEnrollmentsystem.exception.EnrollmentException;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -208,6 +210,78 @@ public class EnrollmentServiceImplTest {
         assertEquals(Semester.FIRST_SEMESTER, response.getSemester());
         assertEquals(student.getStudentId(), response.getStudentId());
         assertEquals(2, response.getCourseCodes().size());
+    }
+
+    @Test
+    public void addCourseThatDoesNotExistThrowsExceptionTest() {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM999"));
+    }
+
+
+    @Test
+    public void addCourseToEnrollmentThatDoesNotExistThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("INVALID_ENROLLMENT_ID", "BCHM411"));
+    }
+
+
+    @Test
+    public void addCourseAlreadyInEnrollmentThrowsExceptionTest() {
+        Course course = new Course();
+        course.setCourseCode("BCHM411");
+        course.setTitle("Metabolism");
+        course.setCreditUnit(6);
+        course.setDepartment("Biochemistry");
+        courseRepository.save(course);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM411"));
+    }
+
+
+    @Test
+    public void addCourseWithEmptyEnrollmentIdThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("", "BCHM411"));
+    }
+
+
+    @Test
+    public void addCourseWithEmptyCourseCodeThrowsExceptionTest() {
+        assertThrows(EnrollmentException.class, () -> enrollmentService.addCourse("12345", ""));
+    }
+
+    @Test
+    public void addCourseToEnrollmentSuccessfullyTest() {
+        Course course = new Course();
+        course.setCourseCode("BCHM412");
+        course.setTitle("Enzymology");
+        course.setCreditUnit(4);
+        course.setDepartment("Biochemistry");
+        courseRepository.save(course);
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(2027);
+        enrollment.setSemester(Semester.FIRST_SEMESTER);
+        enrollment.setStudentId("STUDENT001");
+        enrollment.setCourseCodes(new ArrayList<>(List.of("BCHM411")));
+        enrollmentRepository.save(enrollment);
+
+        AddCourseResponse response = enrollmentService.addCourse(enrollment.getEnrollmentId(), "BCHM412");
+
+        assertEquals(2, response.getCourseCodes().size());
+        assertTrue(response.getCourseCodes().contains("BCHM412"));
     }
 
 }
