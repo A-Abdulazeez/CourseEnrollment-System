@@ -1,0 +1,77 @@
+package us.courseEnrollmentsystem.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import us.courseEnrollmentsystem.data.models.Enrollment;
+import us.courseEnrollmentsystem.data.repositories.CourseRepository;
+import us.courseEnrollmentsystem.data.repositories.EnrollmentRepository;
+import us.courseEnrollmentsystem.data.repositories.StudentRepository;
+import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
+import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
+import us.courseEnrollmentsystem.exception.EnrollmentException;
+
+import java.util.List;
+
+import static us.courseEnrollmentsystem.utils.Mapper.map;
+import static us.courseEnrollmentsystem.utils.Validator.validateEnrollmentRequest;
+
+@Service
+public class EnrollmentServiceImpl implements EnrollmentService {
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+
+    @Override
+    public CreateEnrollmentResponse createEnrollment(CreateEnrollmentRequest enrollmentRequest) {
+        validateEnrollmentRequest(enrollmentRequest);
+
+        if (studentRepository.findById(enrollmentRequest.getStudentId()).isEmpty()) throw new EnrollmentException("Student not found");
+
+        Enrollment existingEnrollment = enrollmentRepository.findByStudentIdAndSessionAndSemester(
+                enrollmentRequest.getStudentId(), enrollmentRequest.getSession(), enrollmentRequest.getSemester()
+        );
+
+        if (existingEnrollment != null) throw new EnrollmentException("Student Already Enrolled For This Semester");
+
+        for (String courseCode : enrollmentRequest.getCourseCodes()) {
+            if (courseRepository.findById(courseCode).isEmpty()) throw new EnrollmentException("Course " + courseCode + " Not Found");
+        }
+
+        Enrollment enrollment = map(enrollmentRequest);
+        enrollmentRepository.save(enrollment);
+
+        return map(enrollment);
+    }
+
+    @Override
+    public Enrollment addCourse(String enrollmentId, String courseCode) {
+        return null;
+    }
+
+    @Override
+    public Enrollment removeCourse(String enrollmentId, String courseCode) {
+        return null;
+    }
+
+    @Override
+    public Enrollment getEnrollmentById(String enrollmentId) {
+        return null;
+    }
+
+    @Override
+    public List<Enrollment> getStudentEnrollments(String studentId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Enrollment> getAllEnrollments() {
+        return List.of();
+    }
+}
