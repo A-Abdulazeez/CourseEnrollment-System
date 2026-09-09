@@ -13,7 +13,7 @@ public interface StudentService {
 
     UpdateStudentResponse updateStudent(String email, UpdateStudentRequest updateRequest);
 
-    List<Student> getAllStudents();
+    List<Student> getAllStudents(String email);
 
 
 
