@@ -2,6 +2,7 @@ package us.courseEnrollmentsystem.utils;
 
 import us.courseEnrollmentsystem.dtos.requests.*;
 import us.courseEnrollmentsystem.exception.CourseException;
+import us.courseEnrollmentsystem.exception.EnrollmentException;
 import us.courseEnrollmentsystem.exception.StudentException;
 
 import javax.security.auth.login.LoginException;
@@ -44,5 +45,13 @@ public class Validator {
         if (updateRequest.getTitle() == null || updateRequest.getTitle().isEmpty()) throw new CourseException("Course title cannot be empty");
         if (updateRequest.getCreditUnit() == 0) throw new CourseException("Credit unit cannot be empty");
         if (updateRequest.getDepartment() == null || updateRequest.getDepartment().isEmpty()) throw new CourseException("Department name cannot be empty");
+    }
+
+    public static void validateEnrollmentRequest(CreateEnrollmentRequest enrollmentRequest) {
+        if (enrollmentRequest == null) throw new EnrollmentException("Enrollment request cannot be null");
+        if (enrollmentRequest.getSession() == null) throw new EnrollmentException("Session cannot be null");
+        if (enrollmentRequest.getSemester() == null) throw new EnrollmentException("Semester cannot be null");
+        if (enrollmentRequest.getStudentId() == null || enrollmentRequest.getStudentId().isEmpty()) throw new EnrollmentException("Student id cannot be null or empty");
+        if (enrollmentRequest.getCourseCodes() == null || enrollmentRequest.getCourseCodes().isEmpty()) throw new EnrollmentException("Course list cannot be null or empty");
     }
 }

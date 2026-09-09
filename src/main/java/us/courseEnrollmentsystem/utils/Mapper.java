@@ -1,9 +1,6 @@
 package us.courseEnrollmentsystem.utils;
 
-import us.courseEnrollmentsystem.data.models.Admin;
-import us.courseEnrollmentsystem.data.models.Course;
-import us.courseEnrollmentsystem.data.models.Role;
-import us.courseEnrollmentsystem.data.models.Student;
+import us.courseEnrollmentsystem.data.models.*;
 import us.courseEnrollmentsystem.dtos.requests.*;
 import us.courseEnrollmentsystem.dtos.responses.*;
 
@@ -108,6 +105,40 @@ public class Mapper {
         response.setCreditUnit(course.getCreditUnit());
         response.setDepartment(course.getDepartment());
         response.setMessage("Course update successful");
+
+        return response;
+    }
+
+    public static Enrollment map(CreateEnrollmentRequest request) {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setSession(request.getSession());
+        enrollment.setSemester(request.getSemester());
+        enrollment.setCourseCodes(request.getCourseCodes());
+        enrollment.setStudentId(request.getStudentId());
+
+        return enrollment;
+    }
+
+    public static CreateEnrollmentResponse map(Enrollment enrollment) {
+        CreateEnrollmentResponse response = new CreateEnrollmentResponse();
+        response.setEnrollmentId(enrollment.getEnrollmentId());
+        response.setSession(enrollment.getSession());
+        response.setSemester(enrollment.getSemester());
+        response.setCourseCodes(enrollment.getCourseCodes());
+        response.setStudentId(enrollment.getStudentId());
+        response.setMessage("Enrolled successfully");
+
+        return response;
+    }
+
+    public static AddCourseResponse mapAddCourse(Enrollment enrollment) {
+        AddCourseResponse response = new AddCourseResponse();
+        response.setEnrollmentId(enrollment.getEnrollmentId());
+        response.setSession(enrollment.getSession());
+        response.setSemester(enrollment.getSemester());
+        response.setCourseCodes(enrollment.getCourseCodes());
+        response.setStudentId(enrollment.getStudentId());
+        response.setMessage("Course added successfully");
 
         return response;
     }
