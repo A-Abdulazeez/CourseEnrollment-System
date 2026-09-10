@@ -49,9 +49,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        List<Student> students = studentRepository.findAll();
+    public List<Student> getAllStudents(String email) {
+        if (!"admin@administration.com".equals(email)) throw new StudentException("Only admin Has The Power To view all students");
 
+        List<Student> students = studentRepository.findAll();
         if (students.isEmpty()) throw new StudentException("Student list is empty");
 
         return students;

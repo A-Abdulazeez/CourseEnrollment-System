@@ -142,4 +142,16 @@ public class Mapper {
 
         return response;
     }
+
+    public static RemoveCourseResponse mapRemoveCourse(Enrollment enrollment) {
+        RemoveCourseResponse response = new RemoveCourseResponse();
+        response.setEnrollmentId(enrollment.getEnrollmentId());
+        response.setSession(enrollment.getSession());
+        response.setSemester(enrollment.getSemester());
+        response.setCourseCodes(enrollment.getCourseCodes());
+        response.setStudentId(enrollment.getStudentId());
+        response.setMessage("Course removed successfully");
+
+        return response;
+    }
 }

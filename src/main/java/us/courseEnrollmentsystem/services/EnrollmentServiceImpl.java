@@ -3,18 +3,19 @@ package us.courseEnrollmentsystem.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import us.courseEnrollmentsystem.data.models.Enrollment;
+import us.courseEnrollmentsystem.data.models.Student;
 import us.courseEnrollmentsystem.data.repositories.CourseRepository;
 import us.courseEnrollmentsystem.data.repositories.EnrollmentRepository;
 import us.courseEnrollmentsystem.data.repositories.StudentRepository;
 import us.courseEnrollmentsystem.dtos.requests.CreateEnrollmentRequest;
 import us.courseEnrollmentsystem.dtos.responses.AddCourseResponse;
 import us.courseEnrollmentsystem.dtos.responses.CreateEnrollmentResponse;
+import us.courseEnrollmentsystem.dtos.responses.RemoveCourseResponse;
 import us.courseEnrollmentsystem.exception.EnrollmentException;
 
 import java.util.List;
 
-import static us.courseEnrollmentsystem.utils.Mapper.map;
-import static us.courseEnrollmentsystem.utils.Mapper.mapAddCourse;
+import static us.courseEnrollmentsystem.utils.Mapper.*;
 import static us.courseEnrollmentsystem.utils.Validator.validateEnrollmentRequest;
 
 @Service
@@ -53,14 +54,25 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public AddCourseResponse addCourse(String enrollmentId, String courseCode) {
+    public AddCourseResponse addCourse(String email, String enrollmentId, String courseCode) {
+        if (email == null || email.isEmpty()) throw new EnrollmentException("Email cannot be null or empty");
         if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
         if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
 
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) throw new EnrollmentException("Student not found");
 
-        if (courseRepository.findById(courseCode).isEmpty()) throw new EnrollmentException("Course with code " + courseCode + " does not exist");
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (!student.getStudentId().equals(enrollment.getStudentId()))
+            throw new EnrollmentException("You Cant Add Course To Enrollment");
+
+        if (courseRepository.findById(courseCode).isEmpty())
+            throw new EnrollmentException("Course with code " + courseCode + " does not exist");
+
         if (enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course already added to enrollment");
+
         enrollment.getCourseCodes().add(courseCode);
         enrollmentRepository.save(enrollment);
 
@@ -68,22 +80,52 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public Enrollment removeCourse(String enrollmentId, String courseCode) {
-        return null;
+    public RemoveCourseResponse removeCourse(String email, String enrollmentId, String courseCode) {
+        if (email == null || email.isEmpty()) throw new EnrollmentException("Email cannot be null or empty");
+        if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
+        if (courseCode == null || courseCode.isEmpty()) throw new EnrollmentException("Course code cannot be null or empty");
+
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) throw new EnrollmentException("Student not found");
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
+        if (!student.getStudentId().equals(enrollment.getStudentId())) throw new EnrollmentException("Student cannot remove course from another student's enrollment");
+        if (!enrollment.getCourseCodes().contains(courseCode)) throw new EnrollmentException("Course is not in this enrollment");
+
+        enrollment.getCourseCodes().remove(courseCode);
+        enrollmentRepository.save(enrollment);
+
+        return mapRemoveCourse(enrollment);
     }
 
     @Override
     public Enrollment getEnrollmentById(String enrollmentId) {
-        return null;
+        if (enrollmentId == null || enrollmentId.isEmpty()) throw new EnrollmentException("Enrollment id cannot be null or empty");
+
+        return enrollmentRepository.findById(enrollmentId).orElseThrow(() ->
+                        new EnrollmentException("Enrollment with id " + enrollmentId + " not found"));
+
     }
 
     @Override
     public List<Enrollment> getStudentEnrollments(String studentId) {
-        return List.of();
+        if (studentId == null || studentId.isEmpty()) throw new EnrollmentException("Student id cannot be null or empty");
+
+        List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
+        if (enrollments.isEmpty()) throw new EnrollmentException("No enrollments found for student " + studentId);
+
+        return enrollments;
     }
 
     @Override
-    public List<Enrollment> getAllEnrollments() {
-        return List.of();
+    public List<Enrollment> getAllEnrollments(String email) {
+        if (!"admin@administration.com".equals(email)) throw new EnrollmentException("Only admin can view all enrollments");
+
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        if (enrollments.isEmpty()) throw new EnrollmentException("Enrollment list is empty");
+
+        return enrollments;
     }
 }

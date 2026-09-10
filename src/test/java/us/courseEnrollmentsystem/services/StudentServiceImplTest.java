@@ -143,7 +143,12 @@ public class StudentServiceImplTest {
 
     @Test
     public void getAllStudentsWithNoStudentsThrowsExceptionTest() {
-        assertThrows(StudentException.class, () -> studentService.getAllStudents());
+        assertThrows(StudentException.class, () -> studentService.getAllStudents("admin@administration.com"));
+    }
+
+    @Test
+    public void getAllStudentsWithNoAminEmailThrowsExceptionTest() {
+        assertThrows(StudentException.class, () -> studentService.getAllStudents("fakeadmin@administration.com"));
     }
 
     @Test
@@ -163,7 +168,7 @@ public class StudentServiceImplTest {
         request2.setPassword("654321");
         authService.registerStudent(request2);
 
-        List<Student> students = studentService.getAllStudents();
+        List<Student> students = studentService.getAllStudents("admin@administration.com");
 
         assertEquals(2, students.size());
     }
