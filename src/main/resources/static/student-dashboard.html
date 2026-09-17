@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - EnrollHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page">
+    <aside class="sidebar">
+        <div class="sidebar-logo">🎓 EnrollHub</div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#create-enrollment">Create Enrollment</a>
+            <a href="#available-courses">Available Courses</a>
+            <a href="#my-enrollment">My Enrollment</a>
+            <a href="#history">Enrollment History</a>
+        </nav>
+        <button id="studentLogout" class="logout-button">Logout</button>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header" id="dashboard">
+            <div>
+                <p class="dashboard-label">STUDENT PORTAL</p>
+                <h1 id="welcomeName">Welcome</h1>
+                <p>Manage your semester enrollment and courses.</p>
+            </div>
+            <div class="student-profile">
+                <div class="profile-avatar" id="profileAvatar">ST</div>
+                <div>
+                    <strong id="profileName">Student</strong>
+                    <p id="profileDepartment">Department</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="dashboard-cards">
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Current Session</p><span class="stat-icon">📅</span></div>
+                <h2 id="currentSession">—</h2>
+                <span id="currentSemester">NO ENROLLMENT</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Enrolled Courses</p><span class="stat-icon">📚</span></div>
+                <h2 id="enrolledCourseCount">0</h2>
+                <span>Current enrollment</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Available Courses</p><span class="stat-icon">🎓</span></div>
+                <h2 id="availableCourseCount">0</h2>
+                <span>Available to add</span>
+            </div>
+        </section>
+
+        <section class="dashboard-section enrollment-setup" id="create-enrollment">
+            <div class="enrollment-setup-content enrollment-setup-stack">
+                <div>
+                    <span class="section-badge">SEMESTER ENROLLMENT</span>
+                    <h2>Create Your Enrollment</h2>
+                    <p>Select your academic session, semester and at least one starting course.</p>
+                </div>
+
+                <form id="createEnrollmentForm" class="enrollment-form enrollment-form-wide">
+                    <div class="form-group">
+                        <label for="session">Session</label>
+                        <input type="number" id="session" min="2000" max="2100" placeholder="2027" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" required>
+                            <option value="">Select semester</option>
+                            <option value="FIRST_SEMESTER">First Semester</option>
+                            <option value="SECOND_SEMESTER">Second Semester</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="create-enrollment-button">Create Enrollment</button>
+                </form>
+
+                <div class="enrollment-course-picker">
+                    <p class="picker-title">Starting courses</p>
+                    <div id="enrollmentCourseChoices" class="course-choice-list">
+                        <span class="muted-text">Loading courses...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="current-enrollment-banner" id="currentEnrollmentBanner">
+            <div>
+                <span class="current-enrollment-status" id="enrollmentStatus">● NO ACTIVE ENROLLMENT</span>
+                <h3 id="activeEnrollmentTitle">Create an enrollment to begin</h3>
+                <p id="activeEnrollmentText">Choose a session, semester and starting courses above.</p>
+            </div>
+            <div class="enrollment-summary">
+                <div><span>Courses</span><strong id="summaryCourseCount">0</strong></div>
+                <div><span>Total Units</span><strong id="summaryUnits">0</strong></div>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="available-courses">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-badge">COURSES</span>
+                    <h2>Available Courses</h2>
+                    <p>Browse courses created by the administrator and add them to your enrollment.</p>
+                </div>
+                <div class="course-search"><input type="text" id="studentCourseSearch" placeholder="Search courses..."></div>
+            </div>
+            <div class="course-grid" id="availableCoursesGrid">
+                <p class="empty-state">Loading courses...</p>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="my-enrollment">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-badge">CURRENT SEMESTER</span>
+                    <h2>My Enrollment</h2>
+                    <p id="currentEnrollmentSubtitle">Your current enrolled courses will appear here.</p>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Course Code</th><th>Course Title</th><th>Department</th><th>Credit Unit</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="currentEnrollmentTableBody">
+                        <tr><td colspan="5" class="empty-cell">No active enrollment.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="history">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-badge">ACADEMIC HISTORY</span>
+                    <h2>Enrollment History</h2>
+                    <p>Your current and previous semester enrollment records.</p>
+                </div>
+            </div>
+            <div class="history-list" id="studentHistoryList">
+                <p class="empty-state">No enrollment history yet.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="api.js"></script>
+    <script src="student.js"></script>
+</body>
+</html>
