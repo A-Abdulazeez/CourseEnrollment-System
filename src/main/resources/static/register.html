@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register - EnrollHub</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-container">
+
+        <div class="auth-side">
+
+            <a href="index.html" class="back-link">
+                ← Back to Home
+            </a>
+
+            <div class="auth-side-content">
+
+                <div class="large-icon">
+                    🎓
+                </div>
+
+                <h1>
+                    Join EnrollHub
+                </h1>
+
+                <p>
+                    Create your student account and start
+                    managing your course enrollment.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="auth-form-container">
+
+            <div class="auth-form">
+
+                <h2>Create Account</h2>
+
+                <p class="form-subtitle">
+                    Enter your information to register as a student.
+                </p>
+
+
+                <form id="registerForm">
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <input
+                                type="text"
+                                id="name"
+                                placeholder="Your Full Name"
+                                required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                                type="email"
+                                id="email"
+                                placeholder="mail@email.com"
+                                required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="department">
+                            Department
+                        </label>
+
+                        <input
+                                type="text"
+                                id="department"
+                                placeholder="eg. Biochemistry, Chemistry, Physics ...."
+                                required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                                type="password"
+                                id="password"
+                                placeholder="Password Please"
+                                required
+                        >
+
+                    </div>
+
+
+                    <p id="message"></p>
+
+
+                    <button
+                            type="submit"
+                            class="auth-button">
+
+                        Create Account
+
+                    </button>
+
+                </form>
+
+
+                <p class="auth-footer-text">
+
+                    Already have an account?
+
+                    <a href="login.html">
+                        Login
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="api.js"></script>
+    <script src="register.js"></script>
+
+</body>
+
+</html>

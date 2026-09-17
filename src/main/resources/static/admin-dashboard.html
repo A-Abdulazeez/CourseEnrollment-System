@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EnrollHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page">
+    <aside class="sidebar">
+        <div class="sidebar-logo">🎓 EnrollHub</div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#create-course">Create Course</a>
+            <a href="#manage-courses">Manage Courses</a>
+            <a href="#students">Students</a>
+            <a href="#enrollments">Enrollments</a>
+        </nav>
+        <button id="adminLogout" class="logout-button">Logout</button>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header" id="dashboard">
+            <div>
+                <p class="dashboard-label">ADMIN PORTAL</p>
+                <h1>Admin Dashboard</h1>
+                <p>Manage courses, students and enrollment records.</p>
+            </div>
+            <div class="student-profile">
+                <div class="profile-avatar">AD</div>
+                <div><strong>Administrator</strong><p>Admin</p></div>
+            </div>
+        </header>
+
+        <section class="dashboard-cards">
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Total Courses</p><span class="stat-icon">📚</span></div>
+                <h2 id="adminCourseCount">0</h2><span>Available courses</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Total Students</p><span class="stat-icon">👨‍🎓</span></div>
+                <h2 id="adminStudentCount">0</h2><span>Registered students</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-top"><p>Total Enrollments</p><span class="stat-icon">📋</span></div>
+                <h2 id="adminEnrollmentCount">0</h2><span>Enrollment records</span>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="create-course">
+            <div class="section-title-row">
+                <div><span class="section-badge">COURSE MANAGEMENT</span><h2>Create Course</h2><p>Add a new course for students to enroll in.</p></div>
+            </div>
+            <form class="admin-course-form" id="createCourseForm">
+                <div class="form-group"><label for="courseCode">Course Code</label><input type="text" id="courseCode" placeholder="BCHM411" required></div>
+                <div class="form-group"><label for="courseTitle">Course Title</label><input type="text" id="courseTitle" placeholder="Metabolism" required></div>
+                <div class="form-group"><label for="creditUnit">Credit Unit</label><input type="number" id="creditUnit" min="1" placeholder="6" required></div>
+                <div class="form-group"><label for="courseDepartment">Department</label><input type="text" id="courseDepartment" placeholder="Biochemistry" required></div>
+                <button type="submit" class="admin-create-button">+ Create Course</button>
+            </form>
+        </section>
+
+        <section class="dashboard-section" id="manage-courses">
+            <div class="section-title-row">
+                <div><span class="section-badge">AVAILABLE COURSES</span><h2>Manage Courses</h2><p>View, update or delete courses.</p></div>
+                <div class="course-search"><input type="text" id="adminCourseSearch" placeholder="Search courses..."></div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Course Code</th><th>Course Title</th><th>Department</th><th>Credit Unit</th><th>Actions</th></tr></thead>
+                    <tbody id="adminCoursesTableBody"><tr><td colspan="5" class="empty-cell">Loading courses...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="students">
+            <div class="section-title-row">
+                <div><span class="section-badge">STUDENTS</span><h2>Registered Students</h2><p>View all registered students.</p></div>
+                <div class="course-search"><input type="text" id="adminStudentSearch" placeholder="Search students..."></div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Enrollment</th></tr></thead>
+                    <tbody id="adminStudentsTableBody"><tr><td colspan="6" class="empty-cell">Loading students...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="enrollments">
+            <div class="section-title-row">
+                <div><span class="section-badge">ENROLLMENTS</span><h2>All Enrollments</h2><p>View enrollment records from all students.</p></div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Enrollment ID</th><th>Student ID</th><th>Session</th><th>Semester</th><th>Courses</th></tr></thead>
+                    <tbody id="adminEnrollmentsTableBody"><tr><td colspan="5" class="empty-cell">Loading enrollments...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="studentEnrollmentSection" hidden>
+            <div class="section-title-row">
+                <div><span class="section-badge">STUDENT HISTORY</span><h2>Student Enrollments</h2><p>Enrollment records for the selected student.</p></div>
+            </div>
+            <div class="student-enrollment-header">
+                <div><h3 id="selectedStudentName">Student</h3><p id="selectedStudentDepartment">Department</p></div>
+                <span class="student-id-badge" id="selectedStudentId">Student ID</span>
+            </div>
+            <div class="history-list" id="selectedStudentHistory"></div>
+        </section>
+    </main>
+
+    <div class="modal-backdrop" id="editCourseModal" hidden>
+        <div class="modal-card">
+            <div class="modal-header">
+                <div><span class="section-badge">EDIT COURSE</span><h2 id="editCourseHeading">Update Course</h2></div>
+                <button type="button" class="modal-close" id="closeEditModal">×</button>
+            </div>
+            <form id="editCourseForm">
+                <input type="hidden" id="editCourseCode">
+                <div class="form-group"><label for="editCourseTitle">Course Title</label><input type="text" id="editCourseTitle" required></div>
+                <div class="form-group"><label for="editCreditUnit">Credit Unit</label><input type="number" id="editCreditUnit" min="1" required></div>
+                <div class="form-group"><label for="editCourseDepartment">Department</label><input type="text" id="editCourseDepartment" required></div>
+                <div class="modal-actions">
+                    <button type="button" class="secondary-action-button" id="cancelEditCourse">Cancel</button>
+                    <button type="submit" class="admin-create-button">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
